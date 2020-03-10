@@ -34,7 +34,7 @@ print(x_extend.shape)
 
 
 ## Linear Regression and Getting Coefficients of Models
-reg = LinearRegression()
+reg = LinearRegression(fit_intercept= False, normalize= True)
 reg.fit(x_extend,y)
 coeffs = reg.coef_
 print(coeffs.shape)
