@@ -26,7 +26,7 @@ print(X.shape)
 x_extend = np.append(X, X**2, axis=1)
 x_extend = np.append(x_extend, np.exp(X), axis=1)
 x_extend = np.append(x_extend, np.cos(X), axis=1)
-x_extend = np.hstack((x_extend, np.ones((X.shape[0], 1), dtype=int)))
+x_extend = np.hstack((x_extend, np.ones((X.shape[0], 1), dtype=float)))
 print(x_extend.shape)
 
 
@@ -34,7 +34,7 @@ print(x_extend.shape)
 
 
 ## Linear Regression and Getting Coefficients of Models
-reg = LinearRegression(fit_intercept= False, normalize= True)
+reg = LinearRegression(fit_intercept= False, normalize= False)
 reg.fit(x_extend,y)
 coeffs = reg.coef_
 print(coeffs.shape)
@@ -46,7 +46,7 @@ print(coeffs.shape)
 ## Save Coefficient in a csv
 result = pd.concat([pd.DataFrame(coeffs)])
 print(result)
-pd.DataFrame(result).to_csv("submit.csv", index=False, header=False, decimal='.', sep=' ', float_format='%.1f')
+pd.DataFrame(result).to_csv("submit.csv", index=False, header=False, decimal='.', sep=' ', float_format='%.0f')
 
 
 # In[ ]:
