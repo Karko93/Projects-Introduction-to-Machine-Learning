@@ -34,20 +34,24 @@ print(x_extend.shape)
 
 
 ## Linear Regression and Getting Coefficients of Models
-reg = LinearRegression(fit_intercept= False, normalize= False)
+reg = LinearRegression(fit_intercept= False, normalize=True)
 reg.fit(x_extend,y)
-coeffs = reg.coef_
-print(coeffs.shape)
+Coeffs = reg.coef_
+print(Coeffs.shape)
 
 
 # In[15]:
 
 
 ## Save Coefficient in a csv
-result = pd.concat([pd.DataFrame(coeffs)])
-print(result)
+result = pd.concat([pd.DataFrame(Coeffs)])
+np.set_printoptions(precision=3)
+print(Coeffs)
 pd.DataFrame(result).to_csv("submit.csv", index=False, header=False, decimal='.', sep=' ', float_format='%.0f')
 
+Coeffs_Pre = np.array(pd.read_csv("submit_pre.csv", header = None))
+
+print('\n', Coeffs_Pre.T - [Coeffs])
 
 # In[ ]:
 
