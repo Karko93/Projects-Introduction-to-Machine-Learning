@@ -17,7 +17,7 @@ train = pd.read_csv("train.csv")
 X = np.array(train.drop(columns = ["Id", "y"]))
 y = np.array(train.get("y"))
 
-##Data Preprocessing
+##Data Preprocessing (t.b.a.)
 
 #Ridge Regression with K-Fold
 cv = KFold(n_splits=10)
