@@ -79,3 +79,4 @@ for i in range(5): # loop over different regularization parameters
         avg_rmse[i] += rmse
     avg_rmse[i] /= n_fold
 
+print(avg_rmse)
