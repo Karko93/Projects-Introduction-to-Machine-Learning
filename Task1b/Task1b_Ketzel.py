@@ -26,7 +26,7 @@ print(X.shape)
 x_extend = np.append(X, X**2, axis=1)
 x_extend = np.append(x_extend, np.exp(X), axis=1)
 x_extend = np.append(x_extend, np.cos(X), axis=1)
-x_extend = np.hstack((x_extend, np.ones((X.shape[0], 1), dtype=float)))
+x_extend = np.hstack((x_extend, np.ones((X.shape[0], 1), dtype=int)))
 print(x_extend.shape)
 
 
@@ -45,13 +45,12 @@ print(Coeffs.shape)
 
 ## Save Coefficient in a csv
 result = pd.concat([pd.DataFrame(Coeffs)])
-np.set_printoptions(precision=3)
-print(Coeffs)
+np.set_printoptions(precision=0)
 pd.DataFrame(result).to_csv("submit.csv", index=False, header=False, decimal='.', sep=' ', float_format='%.0f')
 
 Coeffs_Pre = np.array(pd.read_csv("submit_pre.csv", header = None))
 
-print('\n', Coeffs_Pre.T - [Coeffs])
+print('\n', Coeffs_Pre.T,'\n', Coeffs)
 
 # In[ ]:
 
