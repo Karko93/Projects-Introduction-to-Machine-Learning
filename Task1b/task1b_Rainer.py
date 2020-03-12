@@ -10,12 +10,7 @@ Created on Tue Mar 10 16:52:51 2020
 #####################
 import numpy as np
 import csv
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import normalize
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from math import sqrt
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
@@ -73,22 +68,18 @@ for j in range(idx+1):
 # Model Selection #
 ###################
 x_bar = np.array(x_bar)
-#x_bar = normalize(x_bar)
 y = np.array(y)
     
-n_fold = 20
+n_fold = 30
 kf = KFold(n_splits = n_fold)          
 
 exp_min = -3
-exp_max = 5
-exp_range = exp_max - exp_min
+exp_max = 6
 xhi = 10**exp_min
 j = 0
 avg_rmse_ridge = []
 avg_rmse_lasso = []
 
-lin = LinearRegression(fit_intercept = False)
-lin.fit(x_bar, y)
 while xhi < 10**exp_max:
     avg_rmse_ridge.append(0)
     avg_rmse_lasso.append(0)
@@ -99,16 +90,15 @@ while xhi < 10**exp_max:
         # Ridge
         clf = Ridge(alpha=xhi, fit_intercept=False, normalize=False, max_iter = 2**31-1, tol = 1e-8)
         clf.fit(X_train, y_train)
-        lin.coef_ = clf.coef_
-        y_hat = lin.predict(X_val)
-        avg_rmse_ridge[j] += sqrt(mean_squared_error(y_val, y_hat))
+        w = clf.coef_
+        avg_rmse_ridge[j] += mean_squared_error(y_val, X_val.dot(w), squared = False)
         
         # Lasso
         lasso = Lasso(alpha=xhi, fit_intercept = False, max_iter = 2**31-1, tol = 1e-8)
         lasso.fit(X_train, y_train)
-        lin.coef_ = lasso.coef_
-        y_hat = lin.predict(X_val)
-        avg_rmse_lasso[j] += sqrt(mean_squared_error(y_val, y_hat))
+        w = lasso.coef_
+        avg_rmse_lasso[j] += mean_squared_error(y_val, X_val.dot(w), squared = False)
+               
     avg_rmse_ridge[j] /= n_fold    
     avg_rmse_lasso[j] /= n_fold
     xhi *= 10
@@ -117,22 +107,26 @@ while xhi < 10**exp_max:
 #####################
 # Linear Regression #
 ##################### 
-model = min(avg_rmse_ridge) < min(avg_rmse_lasso)
-    
-# Ridge    
-exp_best_ridge = avg_rmse_ridge.index(min(avg_rmse_ridge)) + exp_min    
-xhi_best = 10**exp_best_ridge
-clf = Ridge(alpha=xhi_best, fit_intercept=False, normalize=False, max_iter = 2**31-1, tol = 1e-8)
-clf.fit(x_bar, y)
-w_ridge = clf.coef_
+model = min(avg_rmse_ridge) < min(avg_rmse_lasso)    
 
-exp_best_lasso = avg_rmse_lasso.index(min(avg_rmse_lasso)) + exp_min    
-xhi_best = 10**exp_best_lasso
-lasso = Lasso(alpha=xhi_best, fit_intercept = False, max_iter = 2**31-1, tol = 1e-8)
-lasso.fit(x_bar, y)
-w_lasso = lasso.coef_
+# Ridge
+if(model):    
+    exp_best = avg_rmse_ridge.index(min(avg_rmse_ridge)) + exp_min    
+    xhi_best = 10**exp_best
+    clf = Ridge(alpha=xhi_best, fit_intercept=False, normalize=False, max_iter = 2**31-1, tol = 1e-8)
+    clf.fit(x_bar, y)
+    w = clf.coef_
+
+# Lasso
+else:
+    exp_best = avg_rmse_lasso.index(min(avg_rmse_lasso)) + exp_min    
+    xhi_best = 10**exp_best
+    lasso = Lasso(alpha=xhi_best, fit_intercept = False, max_iter = 2**31-1, tol = 1e-8)
+    lasso.fit(x_bar, y)
+    w = lasso.coef_
+    
 #########################
 # Saving weights in csv #
 #########################
-result = pd.concat([pd.DataFrame(w_lasso)])
+result = pd.concat([pd.DataFrame(w)])
 pd.DataFrame(result).to_csv("submit.csv", index=False, header=False, decimal='.', sep=' ')
